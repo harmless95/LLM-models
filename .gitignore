@@ -150,7 +150,7 @@ activemq-data/
 # Environments
 .env
 .envrc
-.venv
+my_project/.venv
 env/
 venv/
 ENV/
