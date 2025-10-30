@@ -1,0 +1,14 @@
+[tool.poetry]
+package-mode=false
+
+[tool.poetry.dependencies]
+python="^3.13.5"
+transformers = "^4.57.1"
+accelerate = "^1.11.0"
+peft = "^0.17.1"
+
+
+[dependency-groups]
+dev = [
+    "black (>=25.9.0,<26.0.0)"
+]
