@@ -3,9 +3,12 @@ package-mode=false
 
 [tool.poetry.dependencies]
 python="^3.13.5"
-transformers = "^4.57.1"
+transformers = {extras = ["sentencepiece"], version = "^4.57.1"}
 accelerate = "^1.11.0"
 peft = "^0.17.1"
+hf-xet = "^1.2.0"
+llama-index = "^0.14.6"
+datasets = "^4.3.0"
 
 
 [dependency-groups]
