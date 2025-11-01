@@ -4,7 +4,7 @@ generator = pipeline(
     "text-generation",
     model="distilgpt2",
     # revision="d7645e1",
-    device=-1,
+    device=0,
     num_return_sequences=2,
     max_length=15,
 )

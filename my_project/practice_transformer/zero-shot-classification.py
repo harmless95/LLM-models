@@ -1,15 +1,19 @@
 from transformers import pipeline
+import torch
+
+print(torch.cuda.is_available())  # True, если GPU доступен
+print(torch.version.cuda)  # Должно показать 11.8
+print(torch.__version__)  # 2.4.1+cu118
 
 classifier = pipeline(
     "zero-shot-classification",
-    model="facebook/bart-large-mnli",
-    revision="d7645e1",
-    device=-1,
+    model="sberbank-ai/ruRoberta-large",
+    device=0,
 )
 # sequences - Текст для определения к какой метки относится
 # candidate_labels - Метки
 result = classifier(
-    "There are 200 students studying in Russia.",
-    candidate_labels=["education", "politics", "business", "country"],
+    "В России учатся 200 студентов",
+    candidate_labels=["образование", "политика", "бизнес", "страна"],
 )
 print(result)
