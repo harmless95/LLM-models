@@ -214,4 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
 /my_project/results
+/my_project/my_bert_model
