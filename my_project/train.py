@@ -12,10 +12,6 @@ from torch.utils.data import DataLoader
 
 
 checkpoint = "bert-base-uncased"
-accelerator = Accelerator()
-
-model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
-optimizer = AdamW(model.parameters(), lr=3e-5)
 
 # Строка инициализирует объект Accelerator, который проанализирует окружение и определит необходимые настройки
 accelerator = Accelerator()
