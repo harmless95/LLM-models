@@ -2,8 +2,8 @@ from transformers import pipeline
 import torch
 
 print(torch.cuda.is_available())  # True, если GPU доступен
-print(torch.version.cuda)  # Должно показать 11.8
-print(torch.__version__)  # 2.4.1+cu118
+print(torch.version.cuda)  # Должно показать 12.8
+print(torch.__version__)  # 2.7.1+cu128
 
 classifier = pipeline(
     "zero-shot-classification",

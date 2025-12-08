@@ -1,5 +1,5 @@
 from transformers import pipeline
 
-translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
-translator("Ce cours est produit par Hugging Face.")
-print(translator)
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-en-ru", device=0)
+result = translator("Hello, how are you?")
+print(result)

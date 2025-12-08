@@ -1,0 +1,1 @@
+1.[ ] Повторно изучить practice2.py в fine-turning
