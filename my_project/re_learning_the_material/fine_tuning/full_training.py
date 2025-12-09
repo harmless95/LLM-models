@@ -32,10 +32,10 @@ tokenized_datasets = tokenized_datasets.rename_column("label", "labels")
 tokenized_datasets.set_format("torch")
 
 train_dataloader = DataLoader(
-    tokenized_datasets["train"], shuffle=True, batch_size=4, collate_fn=data_collator
+    tokenized_datasets["train"], shuffle=True, batch_size=8, collate_fn=data_collator
 )
 eval_dataloader = DataLoader(
-    tokenized_datasets["validation"], batch_size=4, collate_fn=data_collator
+    tokenized_datasets["validation"], batch_size=8, collate_fn=data_collator
 )
 
 for batch in train_dataloader:
@@ -69,14 +69,13 @@ for epoch in range(num_epochs):
         lr_scheduler.step()
         progress_bar.update(1)
 
-# metric_evaluate = evaluate.load("glue", "mrpc")
-# model.eval()
-# for batch in eval_dataloader:
-#     batch = {k: v.to(device) for k, v in batch.items()}
-#     with torch.no_grad():
-#         outputs = model(**batch)
-#     logits = outputs.logits
-#     predictions = torch.argmax(logits, dim=-1)
-#     metric_evaluate.add_batch(predictions=predictions, references=batch["labels"])
-#
-# print(metric_evaluate.compute())
+metric_evaluate = evaluate.load("glue", "mrpc")
+model.eval()
+for batch in eval_dataloader:
+    with torch.no_grad():
+        outputs = model(**batch)
+    logits = outputs.logits
+    predictions = torch.argmax(logits, dim=-1)
+    metric_evaluate.add_batch(predictions=predictions, references=batch["labels"])
+
+print(metric_evaluate.compute())
