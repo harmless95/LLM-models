@@ -1,12 +1,13 @@
-from scipy.optimize import bracket
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
+    Trainer,
+    TrainingArguments,
     DataCollatorWithPadding,
 )
 from datasets import load_from_disk
-from torch.utils.data import DataLoader
-
+import numpy as np
+import evaluate
 
 dataset_file = load_from_disk("drug_my_datasets")
 
@@ -33,7 +34,9 @@ def tokenizer_condition(example):
         conditions = [cond.strip() for cond in condition_str.split(",")]
         # для каждого условия ищем метку
         labels = [dict_cond.get(cond, -1) for cond in conditions]
-        labels_list.append(labels)
+        valid_label = [label for label in labels if label >= 0]
+        label = 1 if valid_label else 0
+        labels_list.append(label)
 
     # добавляем полученные списки меток в результаты
     example["labels"] = labels_list
@@ -60,15 +63,39 @@ def tokenizer_function(example):
 
 
 tokenizer_datasets = dataset_file.map(tokenizer_function, batched=True)
-# print(tokenizer_datasets["train"][0])
-tokenizer_datasets = tokenizer_datasets.remove_columns(
-    ["review_length", "usefulCount", "date", "rating", "drugName"]
-)
+collator_data = DataCollatorWithPadding(tokenizer=tokenizer)
 
-collator_date = DataCollatorWithPadding(tokenizer=tokenizer)
-train_dataloader = DataLoader(
-    tokenizer_datasets["train"], batch_size=8, shuffle=True, collate_fn=collator_date
+
+def compute_metrics(eval_preds):
+    logits, labels = eval_preds
+    predictions = np.argmax(logits, axis=-1)
+    accuracy = evaluate.load("accuracy")
+    f1 = evaluate.load("f1")
+
+    return {
+        "accuracy": accuracy.compute(predictions=predictions, references=labels)[
+            "accuracy"
+        ],
+        "f1": f1.compute(predictions=predictions, references=labels)["f1"],
+    }
+
+
+train_args = TrainingArguments(
+    "drug-trainer",
+    eval_strategy="epoch",
+    per_device_train_batch_size=16,  # ✅ x2 скорость
+    fp16=True,  # ✅ x2-3 скорость на GPU
 )
-for batch in train_dataloader:
-    print({key: value.shape for key, value in batch.items()})
-    break
+trainer = Trainer(
+    model=model,
+    args=train_args,
+    data_collator=collator_data,
+    train_dataset=tokenizer_datasets["train"],
+    eval_dataset=tokenizer_datasets["validation"],
+    tokenizer=tokenizer,
+    compute_metrics=compute_metrics,
+)
+trainer.train(resume_from_checkpoint="drug-trainer/checkpoint-24500")
+
+trainer.save_model("drug-bert-final")
+tokenizer.save_pretrained("drug-bert-final")
