@@ -1,2 +1,3 @@
-1.[ ] Повторно изучить practice2.py в fine-turning
+1. [ ] Повторно изучить practice2.py в fine-turning
 2. [ ] Сделать переводчик для картинок
+3. [ ] В Datasets prepare повторно решить задание по обучении.
