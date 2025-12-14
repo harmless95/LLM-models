@@ -1,12 +1,31 @@
 from transformers import pipeline
 
-checkpoint = "drug-bert-final"
+# Твои реальные лейблы (из config, начиная с 73)
+MEDICAL_LABELS = [
+    "birth control",
+    "depression",
+    "pain",
+    "weight loss",
+    "anxiety",
+    "insomnia",
+    "acne",
+    "migraine",
+    "hot flashes",
+    "crohn's disease",
+    "diabetes type 2",
+    "high blood pressure",
+    "copd",
+    "schizophrenia",
+]
 
 classifier = pipeline(
-    "text-classification",
-    model=checkpoint,
-    return_all_scores=True,
+    "zero-shot-classification",
+    model="microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
+    candidate_labels=MEDICAL_LABELS,
 )
-review = "Ditto on rebound sleepless when discontinued. I have done very strange things with no memory including taking additional Ambien. It has helped me sleep when under extreme stress but watch out. Now I am trying to learn how to sleep naturally."
-result = classifier(review)
-print(result)
+
+review = """I was on this for 5 years (and birth control pills...)"""
+result = classifier(review, multi_label=True)
+
+print("Top-5:", result["labels"][:5])
+print("Scores:", [f"{s:.3f}" for s in result["scores"][:5]])
